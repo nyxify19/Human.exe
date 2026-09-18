@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMAN.exe — A Playground for Biology</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Palette matching AMBROSIA - The Human Lab */
+            --bg-color: #fdf6e3;
+            --card-bg: #ffffff;
+            --primary: #7fb069;
+            --accent-pink: #f4a6b7;
+            --accent-coral: #e8674f;
+            --text-dark: #1f2b1a;
+            --banner-green: #2d5233;
+            --border: #dcd3b8;
+            --shadow: rgba(45, 82, 51, 0.1);
+            --radius: 12px;
+            --success: #6bb055;
+            --danger: #e8674f;
+            --warning: #f4d06f;
+            --muted: #8b9982;
+            
+            /* Station Accents */
+            --course1-color: #f4a6b7; /* Brain — pink */
+            --course2-color: #aed9e0; /* Vision — blue */
+            --course3-color: #f4d06f; /* Food — yellow */
+            --course4-color: #e8674f; /* Heart — coral */
+            --course5-color: #b5e48c; /* Graze — sage */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, .brand {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); border-left: 1px solid var(--border); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 6px; border: 3px solid var(--bg-color); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--banner-green); }
+        html { scrollbar-color: var(--primary) var(--bg-color); scrollbar-width: thin; }
+
+        /* Background texture (doodles) */
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="5" fill="none" stroke="%232d5233" stroke-width="2"/><path d="M70,30 Q80,20 90,30 Q80,40 70,30" fill="none" stroke="%232d5233" stroke-width="2"/><rect x="40" y="70" width="10" height="10" fill="none" stroke="%232d5233" stroke-width="2"/></svg>');
+            background-size: 150px 150px;
+        }
+
+        /* Container & Navigation */
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        
+        /* Buttons */
+        .btn {
+            font-family: 'Fredoka', sans-serif;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* Hand-drawn look */
+            transition: all 0.2s ease;
+            box-shadow: 2px 4px 0px var(--banner-green);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 2px 6px 0px var(--banner-green);
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0px 0px 0px var(--banner-green);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: 2px 4px 0px var(--shadow);
+        }
+        .btn.active-tab {
+            background: var(--banner-green);
+            color: white;
+            box-shadow: inset 2px 4px 0px rgba(0,0,0,0.2);
+            transform: translateY(2px);
+        }
+
+        /* Sticky Note */
+        .sticky-note {
+            background-color: var(--accent-pink);
+            color: #3a1a21;
+            padding: 15px;
+            width: 240px;
+            transform: rotate(-2deg);
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+            position: absolute;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+        .sticky-note::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%) rotate(4deg);
+            width: 40px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+        .dismiss-sticky {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            opacity: 0.5;
+        }
+        .dismiss-sticky:hover { opacity: 1; }
+
+        /* Header Treatment */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 3px dashed var(--border);
+        }
+        .brand {
+            font-size: 3.5rem;
+            color: var(--banner-green);
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px var(--primary);
+            letter-spacing: 2px;
+            line-height: 1.1;
+        }
+        .tagline {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-top: 10px;
+        }
+
+        /* Event Info Bar */
+        .info-bar {
+            background: var(--banner-green);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            display: inline-flex;
+            gap: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            box-shadow: 2px 4px 0px var(--shadow);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .info-bar span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Screens transition */
+        .screen { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Station Cards Grid */
+        .station-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+            position: relative;
+        }
+        
+        .station-card {
+            background: var(--card-bg);
+            border: 3px solid var(--border);
+            padding: 25px;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* hand-drawn */
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .station-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 4px 6px 0px var(--shadow);
+        }
+        .sc-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sc-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+        .sc-desc {
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .sc-loop {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-weight: 700;
+            background: var(--bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Leaderboard Table */
+        .table-box {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--radius);
+            border: 3px solid var(--border);
+            box-shadow: 4px 4px 0px var(--shadow);
+            overflow-x: auto;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        .results-table th, .results-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .results-table th {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--banner-green);
+            background: var(--bg-color);
+            font-size: 1.1rem;
+        }
+        .results-table tr:hover { background-color: #faf9f5; }
+        
+        .station-tag {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            border: 1px solid rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+        /* Forms */
+        .form-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            border: 3px solid var(--border);
+            box-shadow: 4px 4px 0px var(--shadow);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--banner-green);
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-color);
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        select.form-control { cursor: pointer; }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            background: var(--bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .radio-label input {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Toasts Container */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 5px solid var(--primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease forwards;
+            transition: opacity 0.3s ease;
+        }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-texture"></div>
+
+    <div class="app-container">
+        
+        <!-- Navigation -->
+        <div class="top-nav">
+            <button class="btn btn-outline active-tab" id="nav-overview" onclick="switchTab('overview')">🎪 Stations Overview</button>
+            <button class="btn btn-outline" id="nav-leaderboard" onclick="switchTab('leaderboard')">🏆 Live Leaderboard</button>
+            <button class="btn btn-outline" id="nav-entry" onclick="switchTab('entry')">📝 Enter a Score</button>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <h1 class="brand">HUMAN.exe</h1>
+            <div class="tagline">A Playground for Biology</div>
+            <div class="info-bar">
+                <span>📅 19 Sept 2026</span>
+                <span>📍 ELT-3 SF</span>
+                <span>⏰ 2:30 PM</span>
+            </div>
+        </header>
+
+        <!-- PAGE 1: OVERVIEW -->
+        <div id="screen-overview" class="screen">
+            <!-- Contextual Tip Sticky Note -->
+            <div class="sticky-note" style="top: 20px; right: -20px;" id="overview-tip">
+                <span class="dismiss-sticky" onclick="this.parentElement.style.display='none'">&times;</span>
+                📌 Don't forget to try the Food Lab minigame!<br><br>
+                <a href="index.html" style="color: var(--banner-green); font-weight: 800;">Play AMBROSIA now →</a>
+            </div>
+
+            <div class="station-grid">
+                <!-- 1. Brain Lab -->
+                <div class="station-card" style="border-color: var(--course1-color);">
+                    <div>
+                        <h2 class="sc-title">
+                            <span class="sc-icon" style="background: var(--course1-color);">🧠</span>
+                            Brain Lab
+                        </h2>
+                        <p class="sc-desc">Test your reaction time and inhibitory control in the high-speed Colour-Slap challenge.</p>
+                    </div>
+                    <div class="sc-loop">Test Yourself → Discover the Biology → Learn a Human Hack → Try Again → Beat the Leaderboard</div>
+                </div>
+
+                <!-- 2. Vision Lab -->
+                <div class="station-card" style="border-color: var(--course2-color);">
+                    <div>
+                        <h2 class="sc-title">
+                            <span class="sc-icon" style="background: var(--course2-color);">👁️</span>
+                            Vision Lab
+                        </h2>
+                        <p class="sc-desc">Challenge your hand-eye coordination and depth perception with the Steady-Hand wire loop.</p>
+                    </div>
+                    <div class="sc-loop">Test Yourself → Discover the Biology → Learn a Human Hack → Try Again → Beat the Leaderboard</div>
+                </div>
+
+                <!-- 3. Heart Lab -->
+                <div class="station-card" style="border-color: var(--course4-color);">
+                    <div>
+                        <h2 class="sc-title">
+                            <span class="sc-icon" style="background: var(--course4-color);">🫀</span>
+                            Heart Lab
+                        </h2>
+                        <p class="sc-desc">Monitor your autonomic response. Can your friends spike your heart rate with targeted ragebait?</p>
+                    </div>
+                    <div class="sc-loop">Test Yourself → Discover the Biology → Learn a Human Hack → Try Again → Beat the Leaderboard</div>
+                </div>
+
+                <!-- 4. Food Lab -->
+                <div class="station-card" style="border-color: var(--course3-color); background-color: #fffef7;">
+                    <div>
+                        <h2 class="sc-title">
+                            <span class="sc-icon" style="background: var(--course3-color);">🥑</span>
+                            Food Lab
+                        </h2>
+                        <p class="sc-desc">Build your optimal meal on a budget in the AMBROSIA digital minigame. Optimize your macros!</p>
+                        <p style="font-size: 0.9rem; color: var(--muted); margin-top: 5px;">(Try the Chicken Empanada!)</p>
+                    </div>
+                    <div class="sc-loop" style="margin-bottom: 15px;">Test Yourself → Discover the Biology → Learn a Human Hack → Try Again → Beat the Leaderboard</div>
+                    <a href="index.html" class="btn" style="text-align: center; background: var(--course3-color); color: var(--text-dark);">Play Minigame</a>
+                </div>
+
+                <!-- 5. Graze Lab -->
+                <div class="station-card" style="border-color: var(--course5-color);">
+                    <div>
+                        <h2 class="sc-title">
+                            <span class="sc-icon" style="background: var(--course5-color);">🖐️</span>
+                            Graze Lab
+                        </h2>
+                        <p class="sc-desc">Rely purely on tactile feedback to identify objects hidden inside the Mystery Box.</p>
+                    </div>
+                    <div class="sc-loop">Test Yourself → Discover the Biology → Learn a Human Hack → Try Again → Beat the Leaderboard</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: LIVE LEADERBOARD -->
+        <div id="screen-leaderboard" class="screen hidden">
+            <div class="text-center mb-4">
+                <h2 style="font-size: 2.2rem; color: var(--banner-green);">Live Leaderboard</h2>
+                <p style="font-weight: 700; color: var(--text-dark);">Normalized rankings across all 5 labs</p>
+            </div>
+            
+            <div class="flex justify-center mb-3 flex-wrap gap-2" id="lb-filters">
+                <button class="btn btn-outline active-tab" onclick="filterLeaderboard('All')">Global (Normalized)</button>
+                <button class="btn btn-outline" style="border-color: var(--course1-color); color: var(--text-dark);" onclick="filterLeaderboard('Brain')">Brain</button>
+                <button class="btn btn-outline" style="border-color: var(--course2-color); color: var(--text-dark);" onclick="filterLeaderboard('Vision')">Vision</button>
+                <button class="btn btn-outline" style="border-color: var(--course4-color); color: var(--text-dark);" onclick="filterLeaderboard('Heart')">Heart</button>
+                <button class="btn btn-outline" style="border-color: var(--course3-color); color: var(--text-dark);" onclick="filterLeaderboard('Food')">Food</button>
+                <button class="btn btn-outline" style="border-color: var(--course5-color); color: var(--text-dark);" onclick="filterLeaderboard('Graze')">Graze</button>
+            </div>
+
+            <div class="table-box">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th width="10%">Rank</th>
+                            <th width="30%">Researcher</th>
+                            <th width="20%">Station</th>
+                            <th width="25%" id="col-raw">Raw Metric</th>
+                            <th width="15%" id="col-norm">Overall Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lb-tbody">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+                <div class="text-center mt-4" style="margin-top: 15px; color: var(--muted); font-size: 0.85rem;">
+                    Auto-refreshing every 5 seconds...
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: MANUAL SCORE ENTRY -->
+        <div id="screen-entry" class="screen hidden">
+            <div class="text-center mb-4">
+                <h2 style="font-size: 2.2rem; color: var(--banner-green);">Facilitator Score Entry</h2>
+                <p style="font-weight: 700; color: var(--danger);">For official booth facilitators only.</p>
+            </div>
+            
+            <div class="form-box">
+                <div class="form-group">
+                    <label class="form-label">Select Station</label>
+                    <select class="form-control" id="entry-station" onchange="renderEntryForm()">
+                        <!-- Note: Food Lab excluded because it submits itself via index.html -->
+                        <option value="Brain">🧠 Brain Lab</option>
+                        <option value="Vision">👁️ Vision Lab</option>
+                        <option value="Heart">🫀 Heart Lab</option>
+                        <option value="Graze">🖐️ Graze Lab</option>
+                    </select>
+                </div>
+                
+                <hr style="border: none; border-top: 2px dashed var(--border); margin: 25px 0;">
+
+                <div id="dynamic-form-fields">
+                    <!-- Dynamic fields rendered here by JS -->
+                </div>
+                
+                <div class="text-center mt-4" style="margin-top: 30px;">
+                    <button class="btn" style="width: 100%; font-size: 1.2rem;" onclick="submitManualScore()">Submit Official Score</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- MAIN LOGIC -->
+    <script>
+        /* =========================================
+           1. STATE & CONSTANTS
+        ========================================= */
+        let state = {
+            currentTab: 'overview',
+            lbFilter: 'All', // 'All', 'Brain', 'Vision', 'Heart', 'Food', 'Graze'
+            entryStation: 'Brain'
+        };
+
+        const STATION_COLORS = {
+            'Brain': 'var(--course1-color)',
+            'Vision': 'var(--course2-color)',
+            'Food': 'var(--course3-color)',
+            'Heart': 'var(--course4-color)',
+            'Graze': 'var(--course5-color)'
+        };
+
+        /* =========================================
+           2. UI UTILS & NAVIGATION
+        ========================================= */
+        function switchTab(tabId) {
+            state.currentTab = tabId;
+            
+            // Hide all screens
+            document.getElementById('screen-overview').classList.add('hidden');
+            document.getElementById('screen-leaderboard').classList.add('hidden');
+            document.getElementById('screen-entry').classList.add('hidden');
+            
+            // Reset nav buttons
+            document.getElementById('nav-overview').classList.remove('active-tab');
+            document.getElementById('nav-leaderboard').classList.remove('active-tab');
+            document.getElementById('nav-entry').classList.remove('active-tab');
+            
+            // Show target
+            document.getElementById(`screen-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).classList.add('active-tab');
+
+            if (tabId === 'leaderboard') renderLeaderboard();
+            if (tabId === 'entry') renderEntryForm();
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span style="font-size: 1.2rem;">${type === 'error' ? '⚠️' : type === 'success' ? '✅' : '💡'}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        /* =========================================
+           3. DATA ACCESS
+        ========================================= */
+        let liveFoodScores = [];
+        let liveManualScores = [];
+
+        function getFoodScores() {
+            return liveFoodScores;
+        }
+
+        function getManualScores() {
+            return liveManualScores;
+        }
+
+        function saveManualScore(entry) {
+            db.collection('ambrosiaManualScores').add(entry);
+        }
+
+        /* =========================================
+           4. LEADERBOARD ENGINE (NORMALIZATION)
+        ========================================= */
+        function getCombinedRankedData() {
+            const foodData = getFoodScores();
+            const manualData = getManualScores();
+            const allData = [...foodData, ...manualData];
+
+            if (allData.length === 0) return [];
+
+            // 1. Calculate min/max per station for normalization bounds
+            let bounds = {};
+            allData.forEach(entry => {
+                if (!bounds[entry.station]) {
+                    bounds[entry.station] = { min: entry.metric_value, max: entry.metric_value };
+                } else {
+                    bounds[entry.station].min = Math.min(bounds[entry.station].min, entry.metric_value);
+                    bounds[entry.station].max = Math.max(bounds[entry.station].max, entry.metric_value);
+                }
+            });
+
+            // 2. Compute Normalized Score (0-100)
+            let ranked = allData.map(entry => {
+                let bound = bounds[entry.station];
+                let range = bound.max - bound.min;
+                let normScore = 100; // Default to perfect if only 1 entry exists for the station
+
+                if (range > 0) {
+                    if (entry.rank_direction === 'higher_is_better') {
+                        normScore = ((entry.metric_value - bound.min) / range) * 100;
+                    } else if (entry.rank_direction === 'lower_is_better') {
+                        normScore = ((bound.max - entry.metric_value) / range) * 100;
+                    }
+                }
+                
+                return { ...entry, normalized_score: normScore };
+            });
+
+            // 3. Sort by normalized score DESC
+            ranked.sort((a, b) => b.normalized_score - a.normalized_score);
+            return ranked;
+        }
+
+        function filterLeaderboard(stationName) {
+            state.lbFilter = stationName;
+            
+            // Update filter button UI
+            document.querySelectorAll('#lb-filters .btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                if (btn.textContent.includes(stationName) || (stationName === 'All' && btn.textContent.includes('Global'))) {
+                    btn.classList.add('active-tab');
+                    if(stationName !== 'All') {
+                        btn.style.background = STATION_COLORS[stationName];
+                    } else {
+                        btn.style.background = 'var(--banner-green)';
+                    }
+                } else {
+                    btn.style.background = 'transparent';
+                }
+            });
+
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            if (state.currentTab !== 'leaderboard') return; // Don't burn cycles if hidden
+            
+            const tbody = document.getElementById('lb-tbody');
+            const colNorm = document.getElementById('col-norm');
+            tbody.innerHTML = '';
+
+            let data = [];
+            
+            if (state.lbFilter === 'All') {
+                // Combined Normalized View
+                data = getCombinedRankedData();
+                colNorm.style.display = 'table-cell';
+            } else {
+                // Station specific Raw View
+                colNorm.style.display = 'none';
+                
+                const foodData = getFoodScores();
+                const manualData = getManualScores();
+                const allData = [...foodData, ...manualData];
+                
+                data = allData.filter(d => d.station === state.lbFilter);
+                
+                // Sort appropriately for this specific station's metric
+                if (data.length > 0) {
+                    let dir = data[0].rank_direction;
+                    if (dir === 'higher_is_better') {
+                        data.sort((a, b) => b.metric_value - a.metric_value);
+                    } else {
+                        data.sort((a, b) => a.metric_value - b.metric_value);
+                    }
+                }
+            }
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="padding: 30px;">No research data collected yet for this view.</td></tr>`;
+                return;
+            }
+
+            // Cap at Top 10 for display
+            const displayData = data.slice(0, 10);
+
+            displayData.forEach((entry, index) => {
+                const tr = document.createElement('tr');
+                const tagColor = STATION_COLORS[entry.station] || 'var(--border)';
+                
+                let normHtml = '';
+                if (state.lbFilter === 'All') {
+                    normHtml = `<td style="font-weight: 800; color: var(--primary); font-size: 1.2rem;">${Math.round(entry.normalized_score)}</td>`;
+                }
+
+                // Append category for Heart lab if exists
+                let nameHtml = entry.name;
+                if (entry.category) {
+                    nameHtml += ` <br><span style="font-size: 0.8rem; color: var(--muted);">${entry.category}</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td style="font-weight: 800; color: var(--banner-green); font-size: 1.1rem;">#${index + 1}</td>
+                    <td style="font-weight: 700;">${nameHtml}</td>
+                    <td>
+                        <span class="station-tag" style="background: ${tagColor};">${entry.station}</span>
+                    </td>
+                    <td style="font-weight: 600;">${entry.metric_label}</td>
+                    ${normHtml}
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function setupFirebaseListeners() {
+            db.collection('foodLabLeaderboard').onSnapshot(snapshot => {
+                liveFoodScores = [];
+                snapshot.forEach(doc => {
+                    const s = doc.data();
+                    liveFoodScores.push({
+                        id: 'food_' + s.timestamp,
+                        station: 'Food',
+                        name: s.name,
+                        metric_label: `Health Index ${s.score}`,
+                        metric_value: s.score,
+                        rank_direction: 'higher_is_better',
+                        timestamp: s.timestamp
+                    });
+                });
+                renderLeaderboard();
+            });
+
+            db.collection('ambrosiaManualScores').onSnapshot(snapshot => {
+                liveManualScores = [];
+                snapshot.forEach(doc => {
+                    liveManualScores.push(doc.data());
+                });
+                renderLeaderboard();
+            });
+        }
+
+
+        /* =========================================
+           5. MANUAL SCORE ENTRY LOGIC
+        ========================================= */
+        function renderEntryForm() {
+            const station = document.getElementById('entry-station').value;
+            const container = document.getElementById('dynamic-form-fields');
+            
+            let html = '';
+            
+            // Common Name Field
+            html += `
+                <div class="form-group">
+                    <label class="form-label">Participant Name / ID</label>
+                    <input type="text" id="entry-name" class="form-control" placeholder="Enter name">
+                </div>
+            `;
+
+            if (station === 'Brain') {
+                html += `
+                    <div class="form-group">
+                        <label class="form-label">Correct Hits</label>
+                        <input type="number" id="entry-brain-hits" class="form-control" placeholder="e.g. 14">
+                        <div style="font-size: 0.85rem; color: var(--muted); margin-top: 5px;">Round duration is a fixed constant.</div>
+                    </div>
+                `;
+            } 
+            else if (station === 'Vision') {
+                html += `
+                    <div class="form-group">
+                        <label class="form-label">Completion Time (Seconds)</label>
+                        <input type="number" step="0.1" id="entry-vision-time" class="form-control" placeholder="e.g. 45.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Wire Touches (Penalties)</label>
+                        <input type="number" id="entry-vision-touches" class="form-control" placeholder="e.g. 2">
+                        <div style="font-size: 0.85rem; color: var(--muted); margin-top: 5px;">0 = Clean run. Used as secondary metric in calculations.</div>
+                    </div>
+                `;
+            }
+            else if (station === 'Heart') {
+                html += `
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="heart-cat" value="Unbothered" checked onchange="toggleHeartFields()"> Most Unbothered
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="heart-cat" value="Ragebaiter" onchange="toggleHeartFields()"> Top Ragebaiter
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group hidden" id="heart-friend-group">
+                        <label class="form-label">Friend's Name (The Ragebaiter)</label>
+                        <input type="text" id="entry-heart-friend" class="form-control" placeholder="Who spiked the heart rate?">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Baseline BPM</label>
+                        <input type="number" id="entry-heart-base" class="form-control" placeholder="e.g. 75">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Peak BPM</label>
+                        <input type="number" id="entry-heart-peak" class="form-control" placeholder="e.g. 110">
+                        <div style="font-size: 0.85rem; color: var(--danger); font-weight: bold; margin-top: 5px;">Note: Raw BPM is strictly used for math only and will NOT be saved to the public leaderboard.</div>
+                    </div>
+                `;
+            }
+            else if (station === 'Graze') {
+                html += `
+                    <div class="form-group">
+                        <label class="form-label">Correctly Identified?</label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="graze-correct" value="yes" checked> Yes</label>
+                            <label class="radio-label"><input type="radio" name="graze-correct" value="no"> No</label>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--muted); margin-top: 5px;">Incorrect guesses will not be ranked.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Taken (Seconds)</label>
+                        <input type="number" step="0.1" id="entry-graze-time" class="form-control" placeholder="e.g. 12.3">
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Global function for the Heart lab radio toggle
+        window.toggleHeartFields = function() {
+            const cat = document.querySelector('input[name="heart-cat"]:checked').value;
+            const friendGroup = document.getElementById('heart-friend-group');
+            if (cat === 'Ragebaiter') {
+                friendGroup.classList.remove('hidden');
+            } else {
+                friendGroup.classList.add('hidden');
+            }
+        };
+
+        function submitManualScore() {
+            const station = document.getElementById('entry-station').value;
+            
+            // Get Name
+            let name = document.getElementById('entry-name').value.trim();
+            if (station === 'Heart') {
+                const cat = document.querySelector('input[name="heart-cat"]:checked').value;
+                if (cat === 'Ragebaiter') {
+                    // For Ragebaiter, the participant is the FRIEND who caused the spike
+                    const friendName = document.getElementById('entry-heart-friend').value.trim();
+                    if (!friendName) {
+                        showToast("Please enter the Friend's name for Top Ragebaiter.", "error");
+                        return;
+                    }
+                    name = friendName + " (Ragebaiter)"; // Override name, keep distinction in display
+                }
+            }
+            
+            if (!name) {
+                showToast("Please enter a participant name.", "error");
+                return;
+            }
+
+            let entry = {
+                id: 'man_' + Date.now() + Math.floor(Math.random()*1000),
+                station: station,
+                name: name,
+                timestamp: new Date().toISOString()
+            };
+
+            // Station Specific Logic
+            if (station === 'Brain') {
+                const hits = parseInt(document.getElementById('entry-brain-hits').value);
+                if (isNaN(hits) || hits < 0) return showToast("Enter valid Correct Hits.", "error");
+                
+                entry.metric_label = `${hits} correct hits`;
+                entry.metric_value = hits;
+                entry.rank_direction = 'higher_is_better';
+            } 
+            else if (station === 'Vision') {
+                const time = parseFloat(document.getElementById('entry-vision-time').value);
+                const touches = parseInt(document.getElementById('entry-vision-touches').value) || 0;
+                if (isNaN(time) || time <= 0) return showToast("Enter valid Completion Time.", "error");
+                
+                // Composite metric for normalization: Time + 5s penalty per touch
+                const compositeMetric = time + (touches * 5);
+                
+                entry.metric_label = `${time}s (${touches} touches)`;
+                entry.metric_value = compositeMetric;
+                entry.rank_direction = 'lower_is_better';
+            }
+            else if (station === 'Heart') {
+                const base = parseInt(document.getElementById('entry-heart-base').value);
+                const peak = parseInt(document.getElementById('entry-heart-peak').value);
+                if (isNaN(base) || isNaN(peak) || base <= 0 || peak <= 0) return showToast("Enter valid BPM values.", "error");
+                
+                // Calculate % change. RAW BPM IS NEVER STORED IN 'entry' OBJECT!
+                const percentChange = ((peak - base) / base) * 100;
+                const roundedChange = Math.round(percentChange);
+                
+                const cat = document.querySelector('input[name="heart-cat"]:checked').value;
+                entry.category = cat;
+                entry.metric_label = `+${roundedChange}% HR Spike`;
+                entry.metric_value = percentChange;
+                
+                if (cat === 'Unbothered') {
+                    entry.rank_direction = 'lower_is_better';
+                } else {
+                    entry.rank_direction = 'higher_is_better';
+                }
+            }
+            else if (station === 'Graze') {
+                const correct = document.querySelector('input[name="graze-correct"]:checked').value;
+                if (correct === 'no') {
+                    showToast("Incorrect guesses are not ranked. Ignored.", "warning");
+                    // Reset fields and abort save
+                    renderEntryForm(); 
+                    return;
+                }
+                
+                const time = parseFloat(document.getElementById('entry-graze-time').value);
+                if (isNaN(time) || time <= 0) return showToast("Enter valid Time Taken.", "error");
+                
+                entry.metric_label = `${time}s (Correct)`;
+                entry.metric_value = time;
+                entry.rank_direction = 'lower_is_better';
+            }
+
+            // Save & Feedback
+            saveManualScore(entry);
+            showToast("Official Score Recorded!", "success");
+            
+            // Reset form but keep station selection
+            renderEntryForm();
+        }
+
+        // Init
+        window.onload = () => {
+            setupFirebaseListeners();
+            renderEntryForm();
+        };
+
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyA3jeeh66-MCVHK3LhCzNC2pSjLtDcbTUc",
+        authDomain: "ambrosia----human-lab.firebaseapp.com",
+        projectId: "ambrosia----human-lab",
+        storageBucket: "ambrosia----human-lab.firebasestorage.app",
+        messagingSenderId: "366430297285",
+        appId: "1:366430297285:web:07f0b7b7e9621cc5ca64ac",
+        measurementId: "G-4S47WKPDP5"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMBROSIA — The Human Lab</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Palette */
+            --bg-color: #fdf6e3;
+            --card-bg: #ffffff;
+            --primary: #7fb069;
+            --accent-pink: #f4a6b7;
+            --accent-coral: #e8674f;
+            --text-dark: #1f2b1a;
+            --banner-green: #2d5233;
+            
+            /* Additions for scale */
+            --border: #dcd3b8;
+            --shadow: rgba(45, 82, 51, 0.1);
+            --radius: 12px;
+            --success: #6bb055;
+            --danger: #e8674f;
+            --warning: #f4d06f;
+            --muted: #8b9982;
+
+            /* Station/Course Accents */
+            --course1-color: #f4a6b7; /* Pink */
+            --course2-color: #aed9e0; /* Blue */
+            --course3-color: #f4d06f; /* Yellow */
+            --course4-color: #e8674f; /* Coral */
+            --course5-color: #b5e48c; /* Sage */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, .brand {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-left: 1px solid var(--border);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 6px;
+            border: 3px solid var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--banner-green);
+        }
+        html {
+            scrollbar-color: var(--primary) var(--bg-color);
+            scrollbar-width: thin;
+        }
+
+        /* Background texture (doodles) */
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="5" fill="none" stroke="%232d5233" stroke-width="2"/><path d="M70,30 Q80,20 90,30 Q80,40 70,30" fill="none" stroke="%232d5233" stroke-width="2"/><rect x="40" y="70" width="10" height="10" fill="none" stroke="%232d5233" stroke-width="2"/></svg>');
+            background-size: 150px 150px;
+        }
+
+        /* Container */
+        .app-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 1rem; }
+        .gap-4 { gap: 1.5rem; }
+        
+        /* Buttons */
+        .btn {
+            font-family: 'Fredoka', sans-serif;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* Hand-drawn look */
+            transition: all 0.2s ease;
+            box-shadow: 2px 4px 0px var(--banner-green);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 2px 6px 0px var(--banner-green);
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0px 0px 0px var(--banner-green);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: 2px 4px 0px var(--shadow);
+        }
+        .btn-danger {
+            background: var(--accent-coral);
+            box-shadow: 2px 4px 0px #b23a24;
+        }
+        .btn-danger:hover {
+            box-shadow: 2px 6px 0px #b23a24;
+        }
+        .btn-danger:active {
+            box-shadow: 0px 0px 0px #b23a24;
+        }
+
+        /* Sticky Note */
+        .sticky-note {
+            background-color: var(--accent-pink);
+            color: #3a1a21;
+            padding: 15px;
+            width: 220px;
+            transform: rotate(-2deg);
+            box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .sticky-note::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%) rotate(4deg);
+            width: 40px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+        .dismiss-sticky {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            opacity: 0.5;
+        }
+        .dismiss-sticky:hover { opacity: 1; }
+
+        /* Mascot Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 3px dashed var(--border);
+        }
+        .mascot-svg {
+            width: 60px;
+            height: 60px;
+            fill: var(--text-dark);
+        }
+        .brand {
+            font-size: 2.5rem;
+            color: var(--banner-green);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px var(--primary);
+            letter-spacing: 1px;
+        }
+        
+        /* Screens */
+        .screen {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Filter Screen (Screen 1) */
+        .filter-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            border: 2px solid var(--border);
+            box-shadow: 4px 4px 0px var(--border);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .filter-group {
+            margin-bottom: 25px;
+        }
+        .filter-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--banner-green);
+        }
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .filter-chip {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            background: white;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .filter-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--banner-green);
+        }
+
+        /* Game HUD */
+        .hud {
+            position: sticky;
+            top: 10px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            border: 2px solid var(--banner-green);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            margin-bottom: 20px;
+        }
+        .budget-display {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            color: var(--banner-green);
+        }
+        .budget-display.low { color: var(--warning); }
+        .budget-display.critical { color: var(--danger); }
+        .course-indicator {
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        /* Food Grid */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .food-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            padding: 20px;
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; /* hand-drawn */
+            display: flex;
+            flex-col;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 4px 6px 0px var(--shadow);
+        }
+        .food-card.in-tray {
+            border-color: var(--primary);
+            background-color: #f6faf3;
+        }
+        .fc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .fc-name {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            max-width: 70%;
+        }
+        .fc-price {
+            font-weight: 800;
+            color: var(--banner-green);
+            background: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        .fc-tags {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        /* Addons Section */
+        .addons-box {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border);
+            display: none;
+        }
+        .food-card.in-tray .addons-box {
+            display: block;
+        }
+        .addon-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .addon-item input[type="checkbox"] {
+            margin-right: 8px;
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Results Screen */
+        .results-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            border: 2px solid var(--banner-green);
+            box-shadow: 4px 4px 0px var(--shadow);
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            border: 6px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .score-number {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3rem;
+            color: var(--banner-green);
+            line-height: 1;
+        }
+        .score-label {
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .results-table th, .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .results-table th {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--banner-green);
+            background: var(--bg-color);
+        }
+        .results-table tr:hover {
+            background-color: #faf9f5;
+        }
+        .addon-row {
+            font-size: 0.85rem;
+            color: var(--muted);
+            background-color: #faf9f5;
+        }
+        .addon-row td {
+            padding-top: 4px;
+            padding-bottom: 4px;
+            border-bottom: none;
+        }
+        
+        .macro-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .macro-pill {
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .macro-val { color: var(--banner-green); }
+
+        .leaderboard-form {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .leaderboard-form input {
+            padding: 10px 15px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            margin-right: 10px;
+            font-family: 'Nunito', sans-serif;
+        }
+        .leaderboard-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Toasts Container */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 5px solid var(--primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease forwards;
+            transition: opacity 0.3s ease;
+        }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Footer */
+        .bottom-info-bar {
+            background: var(--banner-green);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+            margin-top: 40px;
+            font-weight: 600;
+        }
+        .bottom-info-bar span {
+            color: var(--accent-pink);
+            text-decoration: underline;
+            text-decoration-color: var(--warning);
+            text-decoration-thickness: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .budget-display { font-size: 1.4rem; }
+            .food-grid { grid-template-columns: 1fr; }
+            .mascot-svg { width: 40px; height: 40px; }
+            .brand { font-size: 1.8rem; }
+            .results-table { font-size: 0.9rem; }
+            .results-table th, .results-table td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-texture"></div>
+
+    <div class="app-container">
+        
+        <!-- Global Header -->
+        <header class="header">
+            <!-- Mascot: Skeleton with leaf on brain -->
+            <svg class="mascot-svg" viewBox="0 0 100 100">
+                <!-- Skull -->
+                <path d="M50,15 C30,15 20,30 20,45 C20,55 25,65 30,70 L30,85 C30,90 35,90 35,90 L65,90 C65,90 70,90 70,85 L70,70 C75,65 80,55 80,45 C80,30 70,15 50,15 Z" fill="#ffffff" stroke="#1f2b1a" stroke-width="3"/>
+                <!-- Sunglasses -->
+                <path d="M25,45 Q50,40 75,45 L70,55 Q50,50 30,55 Z" fill="#1f2b1a"/>
+                <!-- Brain/Leaf sprout -->
+                <path d="M50,15 C45,5 55,5 50,15" stroke="#7fb069" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M50,8 C55,5 60,10 50,15 C40,10 45,5 50,8 Z" fill="#7fb069"/>
+                <!-- Teeth lines -->
+                <line x1="40" y1="75" x2="40" y2="85" stroke="#1f2b1a" stroke-width="2"/>
+                <line x1="50" y1="75" x2="50" y2="85" stroke="#1f2b1a" stroke-width="2"/>
+                <line x1="60" y1="75" x2="60" y2="85" stroke="#1f2b1a" stroke-width="2"/>
+            </svg>
+            <h1 class="brand">HUMAN.exe</h1>
+        </header>
+
+        <!-- SCREEN 1: CONFIGURATION -->
+        <div id="screen-config" class="screen">
+            <div class="text-center mb-4">
+                <h2>Welcome to AMBROSIA Food Lab</h2>
+                <p>Configure your lab environment before the simulation begins.</p>
+            </div>
+            
+            <div class="filter-box">
+                <div class="filter-group">
+                    <label class="filter-label">Select Cuisines (Multi-select)</label>
+                    <div class="chip-container" id="cuisine-filters">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Dietary Preference (Single-select)</label>
+                    <div class="chip-container" id="diet-filters">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="text-center mt-4" style="margin-top: 30px;">
+                    <button class="btn" style="width: 100%; font-size: 1.3rem;" onclick="startGame()">Start Lab Simulation →</button>
+                </div>
+                
+                <div class="text-center mt-2" style="margin-top: 15px;">
+                    <button class="btn btn-outline" style="width: 100%; font-size: 1.1rem;" onclick="showLeaderboard()">🏆 View Highscores</button>
+                </div>
+
+                <div class="text-center mt-2" style="margin-top: 15px;">
+                    <a href="site.html" class="btn" style="width: 100%; font-size: 1.1rem; text-decoration: none; display: inline-block;">🏠 Back to Main Page</a>
+                </div>
+            </div>
+            
+            <!-- Contextual Tip -->
+            <div class="sticky-note" style="position: absolute; right: -50px; top: 100px; display: none;" id="config-tip">
+                <span class="dismiss-sticky" onclick="this.parentElement.style.display='none'">&times;</span>
+                Hey Fresher!<br>You get ₹1,000 for your meal. Balance your macros to maximize your Scientific Health Index!
+            </div>
+        </div>
+
+        <!-- SCREEN 2: GAME HUD & COURSES -->
+        <div id="screen-game" class="screen hidden">
+            <!-- HUD -->
+            <div class="hud">
+                <div>
+                    <div class="course-indicator" id="course-title">Course 1 of 5: Appetizers</div>
+                </div>
+                <div class="budget-display" id="hud-budget">₹1000</div>
+            </div>
+
+            <!-- Course Container -->
+            <div id="course-container">
+                <!-- Food cards rendered by JS -->
+                <div class="food-grid" id="food-grid"></div>
+            </div>
+            
+            <div class="empty-state hidden text-center" id="empty-state" style="padding: 40px;">
+                <h3>No items match your filters for this course!</h3>
+                <p class="mb-2">Don't worry, you can skip to the next course.</p>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex justify-between items-center mt-4" style="margin-top: 20px;">
+                <button class="btn btn-outline" id="btn-back" onclick="prevCourse()">← Back</button>
+                <button class="btn" id="btn-next" onclick="nextCourse()">Next Course →</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RESULTS -->
+        <div id="screen-results" class="screen hidden">
+            <div class="text-center mb-4">
+                <h2 style="font-size: 2rem; color: var(--banner-green);">Lab Results Analyzed</h2>
+                <p>Your meal composition has been evaluated.</p>
+            </div>
+
+            <div class="results-box">
+                <div class="score-circle">
+                    <div class="score-number" id="result-score">85</div>
+                    <div class="score-label">Health Index</div>
+                </div>
+                
+                <h3 class="text-center mb-3">Macro Summary</h3>
+                <div class="macro-summary" id="result-macros">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <h3 class="mb-2">Itemized Breakdown</h3>
+                <div style="overflow-x: auto;">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Course</th>
+                                <th>Price</th>
+                                <th>Calories</th>
+                                <th>Protein</th>
+                            </tr>
+                        </thead>
+                        <tbody id="result-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: 800; background: var(--bg-color);">
+                                <td colspan="2" style="text-align: right;">Total Spent:</td>
+                                <td id="result-total-spend" style="color: var(--danger);">₹0</td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Leaderboard Submission -->
+                <div class="leaderboard-form">
+                    <h3 class="mb-2">Submit to Global Leaderboard</h3>
+                    <div class="flex justify-center items-center">
+                        <input type="text" id="player-name" placeholder="Enter your Name/ID" maxlength="20">
+                        <button class="btn" onclick="submitScore()">Submit Score</button>
+                    </div>
+                </div>
+
+                <div class="text-center" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-outline" onclick="resetGame()">↺ Play Again (Rebuild)</button>
+                    <a href="site.html" class="btn" style="text-decoration: none; display: inline-block;">🏠 Back to Main Page</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SCREEN 4: LEADERBOARD -->
+        <div id="screen-leaderboard" class="screen hidden">
+            <div class="text-center mb-4">
+                <h2 style="font-size: 2rem; color: var(--banner-green);">Global Highscores</h2>
+                <p>Top researchers in the AMBROSIA lab.</p>
+            </div>
+            
+            <div class="results-box">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name/ID</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-table-body">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+                
+                <div class="text-center">
+                    <button class="btn btn-outline" onclick="hideLeaderboard()">← Back to Menu</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-info-bar">
+            HUMAN.exe • <span>Freshers Spotlight 2026</span> • AMBROSIA
+        </div>
+
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- MAIN LOGIC -->
+    <script>
+        /* =========================================
+           1. DATABASE 
+           (Fully populated, no truncation)
+        ========================================= */
+        const FOOD_DATABASE = [
+            // Appetizers (Course 1)
+            { id: 'app1', name: 'Paneer Tikka', course: 1, cuisine: 'Indian', diet: 'Vegetarian', price: 150, calories: 220, protein_g: 14, carbs_g: 8, fat_g: 15, sugar_g: 2, salt_g: 1.5, tags: ['high-protein', 'grilled'] },
+            { id: 'app2', name: 'Chicken Tikka', course: 1, cuisine: 'Indian', diet: 'Non-Vegetarian', price: 180, calories: 200, protein_g: 22, carbs_g: 5, fat_g: 10, sugar_g: 1, salt_g: 1.6, tags: ['high-protein', 'grilled'] },
+            { id: 'app3', name: 'Bruschetta', course: 1, cuisine: 'Italian/French', diet: 'Vegan', price: 120, calories: 150, protein_g: 4, carbs_g: 20, fat_g: 6, sugar_g: 2, salt_g: 0.8, tags: ['fresh', 'carbs'] },
+            { id: 'app4', name: 'Spring Rolls', course: 1, cuisine: 'Pan-Asian', diet: 'Vegan', price: 130, calories: 180, protein_g: 3, carbs_g: 25, fat_g: 8, sugar_g: 3, salt_g: 1.2, tags: ['fried', 'crispy'] },
+            { id: 'app5', name: 'Calamari', course: 1, cuisine: 'Italian/French', diet: 'Non-Vegetarian', price: 200, calories: 250, protein_g: 15, carbs_g: 18, fat_g: 14, sugar_g: 0, salt_g: 1.8, tags: ['seafood', 'fried'] },
+            { id: 'app6', name: 'Nachos & Salsa', course: 1, cuisine: 'Latin/Spanish', diet: 'Vegetarian', price: 140, calories: 280, protein_g: 6, carbs_g: 35, fat_g: 12, sugar_g: 4, salt_g: 1.9, tags: ['sharing', 'carbs'] },
+            { id: 'app7', name: 'Chicken Empanada', course: 1, cuisine: 'Latin/Spanish', diet: 'Non-Vegetarian', price: 160, calories: 300, protein_g: 12, carbs_g: 22, fat_g: 18, sugar_g: 2, salt_g: 1.4, tags: ['meat', 'savory'] },
+            { id: 'app8', name: 'Onion Rings', course: 1, cuisine: 'Western', diet: 'Vegetarian', price: 110, calories: 240, protein_g: 3, carbs_g: 28, fat_g: 14, sugar_g: 4, salt_g: 1.1, tags: ['fried', 'snack'] },
+            { id: 'app9', name: 'Tofu Bites', course: 1, cuisine: 'Pan-Asian', diet: 'Vegan', price: 130, calories: 160, protein_g: 10, carbs_g: 8, fat_g: 9, sugar_g: 1, salt_g: 1.3, tags: ['protein', 'savory'] },
+            
+            // Palate Cleanser (Course 2)
+            { id: 'pal1', name: 'Tomato Soup', course: 2, cuisine: 'Western', diet: 'Vegan', price: 100, calories: 90, protein_g: 2, carbs_g: 15, fat_g: 3, sugar_g: 8, salt_g: 1.2, tags: ['warm', 'light'] },
+            { id: 'pal2', name: 'Chicken Sweet Corn Soup', course: 2, cuisine: 'Pan-Asian', diet: 'Non-Vegetarian', price: 140, calories: 150, protein_g: 10, carbs_g: 18, fat_g: 4, sugar_g: 4, salt_g: 1.5, tags: ['warm', 'comfort'] },
+            { id: 'pal3', name: 'Caprese Salad', course: 2, cuisine: 'Italian/French', diet: 'Vegetarian', price: 160, calories: 210, protein_g: 8, carbs_g: 6, fat_g: 18, sugar_g: 4, salt_g: 0.9, tags: ['fresh', 'cheese'] },
+            { id: 'pal4', name: 'Kachumber Salad', course: 2, cuisine: 'Indian', diet: 'Vegan', price: 80, calories: 45, protein_g: 1, carbs_g: 10, fat_g: 0, sugar_g: 3, salt_g: 0.5, tags: ['fresh', 'crunchy'] },
+            { id: 'pal5', name: 'Gazpacho', course: 2, cuisine: 'Latin/Spanish', diet: 'Vegan', price: 120, calories: 70, protein_g: 2, carbs_g: 12, fat_g: 2, sugar_g: 6, salt_g: 0.8, tags: ['cold', 'refreshing'] },
+            { id: 'pal6', name: 'Caesar Salad (Chicken)', course: 2, cuisine: 'Western', diet: 'Non-Vegetarian', price: 180, calories: 320, protein_g: 20, carbs_g: 10, fat_g: 22, sugar_g: 3, salt_g: 1.7, tags: ['creamy', 'protein'] },
+            { id: 'pal7', name: 'Fruit Bowl', course: 2, cuisine: 'Western', diet: 'Vegan', price: 110, calories: 120, protein_g: 1, carbs_g: 30, fat_g: 0, sugar_g: 22, salt_g: 0, tags: ['sweet', 'vitamins'] },
+
+            // Beverages (Course 3)
+            { id: 'bev1', name: 'Masala Chai', course: 3, cuisine: 'Indian', diet: 'Vegetarian', price: 50, calories: 110, protein_g: 3, carbs_g: 15, fat_g: 4, sugar_g: 12, salt_g: 0.1, tags: ['hot', 'comfort'] },
+            { id: 'bev2', name: 'Lassi', course: 3, cuisine: 'Indian', diet: 'Vegetarian', price: 80, calories: 180, protein_g: 6, carbs_g: 25, fat_g: 7, sugar_g: 20, salt_g: 0.2, tags: ['cold', 'sweet'] },
+            { id: 'bev3', name: 'Espresso', course: 3, cuisine: 'Italian/French', diet: 'Vegan', price: 90, calories: 5, protein_g: 0, carbs_g: 1, fat_g: 0, sugar_g: 0, salt_g: 0, tags: ['hot', 'energy'] },
+            { id: 'bev4', name: 'Matcha Latte', course: 3, cuisine: 'Pan-Asian', diet: 'Vegetarian', price: 130, calories: 140, protein_g: 5, carbs_g: 18, fat_g: 5, sugar_g: 14, salt_g: 0.1, tags: ['hot', 'trendy'] },
+            { id: 'bev5', name: 'Mojito (Virgin)', course: 3, cuisine: 'Latin/Spanish', diet: 'Vegan', price: 110, calories: 120, protein_g: 0, carbs_g: 30, fat_g: 0, sugar_g: 25, salt_g: 0, tags: ['cold', 'refreshing'] },
+            { id: 'bev6', name: 'Cola', course: 3, cuisine: 'Western', diet: 'Vegan', price: 60, calories: 140, protein_g: 0, carbs_g: 38, fat_g: 0, sugar_g: 38, salt_g: 0.1, tags: ['cold', 'soda'] },
+            { id: 'bev7', name: 'Water', course: 3, cuisine: 'Western', diet: 'Vegan', price: 20, calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0, sugar_g: 0, salt_g: 0, tags: ['hydration', 'pure'] },
+
+            // Main Courses (Course 4) - Includes Addons
+            { 
+                id: 'main1', name: 'Butter Chicken & Naan', course: 4, cuisine: 'Indian', diet: 'Non-Vegetarian', price: 300, calories: 650, protein_g: 35, carbs_g: 50, fat_g: 32, sugar_g: 8, salt_g: 2.2, tags: ['rich', 'heavy'],
+                addons: [
+                    { name: 'Extra Butter', price_delta: 30, calories_delta: 100, protein_delta: 0, carbs_delta: 0, fat_delta: 12, sugar_delta: 0, salt_delta: 0.2 },
+                    { name: 'Garlic Naan Upgrade', price_delta: 20, calories_delta: 50, protein_delta: 1, carbs_delta: 8, fat_delta: 2, sugar_delta: 0, salt_delta: 0.3 }
+                ]
+            },
+            { 
+                id: 'main2', name: 'Palak Paneer', course: 4, cuisine: 'Indian', diet: 'Vegetarian', price: 260, calories: 450, protein_g: 20, carbs_g: 25, fat_g: 30, sugar_g: 5, salt_g: 1.8, tags: ['iron', 'creamy'],
+                addons: [
+                    { name: 'Extra Paneer', price_delta: 50, calories_delta: 120, protein_delta: 8, carbs_delta: 2, fat_delta: 10, sugar_delta: 1, salt_delta: 0.4 }
+                ]
+            },
+            { 
+                id: 'main3', name: 'Margherita Pizza', course: 4, cuisine: 'Italian/French', diet: 'Vegetarian', price: 350, calories: 700, protein_g: 25, carbs_g: 85, fat_g: 28, sugar_g: 6, salt_g: 2.5, tags: ['classic', 'carbs'],
+                addons: [
+                    { name: 'Extra Cheese', price_delta: 60, calories_delta: 150, protein_delta: 10, carbs_delta: 2, fat_delta: 12, sugar_delta: 1, salt_delta: 0.5 },
+                    { name: 'Chili Flakes', price_delta: 0, calories_delta: 5, protein_delta: 0, carbs_delta: 1, fat_delta: 0, sugar_delta: 0, salt_delta: 0 }
+                ]
+            },
+            { 
+                id: 'main4', name: 'Pasta Carbonara', course: 4, cuisine: 'Italian/French', diet: 'Non-Vegetarian', price: 320, calories: 600, protein_g: 22, carbs_g: 55, fat_g: 30, sugar_g: 4, salt_g: 2.0, tags: ['creamy', 'comfort'],
+                addons: [
+                    { name: 'Extra Bacon', price_delta: 70, calories_delta: 120, protein_delta: 8, carbs_delta: 0, fat_delta: 10, sugar_delta: 0, salt_delta: 0.8 }
+                ]
+            },
+            { 
+                id: 'main5', name: 'Pad Thai (Tofu)', course: 4, cuisine: 'Pan-Asian', diet: 'Vegan', price: 280, calories: 480, protein_g: 15, carbs_g: 65, fat_g: 18, sugar_g: 12, salt_g: 2.1, tags: ['noodles', 'sweet'],
+                addons: [
+                    { name: 'Extra Peanuts', price_delta: 30, calories_delta: 90, protein_delta: 4, carbs_delta: 3, fat_delta: 8, sugar_delta: 1, salt_delta: 0.1 },
+                    { name: 'Spicy Sambal', price_delta: 10, calories_delta: 20, protein_delta: 0, carbs_delta: 3, fat_delta: 1, sugar_delta: 2, salt_delta: 0.6 }
+                ]
+            },
+            { 
+                id: 'main6', name: 'Sushi Platter', course: 4, cuisine: 'Pan-Asian', diet: 'Non-Vegetarian', price: 400, calories: 400, protein_g: 22, carbs_g: 60, fat_g: 8, sugar_g: 6, salt_g: 2.4, tags: ['seafood', 'clean'],
+                addons: [
+                    { name: 'Extra Soy Sauce', price_delta: 0, calories_delta: 10, protein_delta: 1, carbs_delta: 1, fat_delta: 0, sugar_delta: 0, salt_delta: 1.0 },
+                    { name: 'Spicy Mayo', price_delta: 20, calories_delta: 80, protein_delta: 0, carbs_delta: 2, fat_delta: 8, sugar_delta: 1, salt_delta: 0.3 }
+                ]
+            },
+            { 
+                id: 'main7', name: 'Chicken Tacos', course: 4, cuisine: 'Latin/Spanish', diet: 'Non-Vegetarian', price: 290, calories: 520, protein_g: 28, carbs_g: 45, fat_g: 24, sugar_g: 5, salt_g: 1.9, tags: ['spicy', 'meat'],
+                addons: [
+                    { name: 'Guacamole', price_delta: 50, calories_delta: 100, protein_delta: 1, carbs_delta: 6, fat_delta: 9, sugar_delta: 1, salt_delta: 0.2 },
+                    { name: 'Extra Jalapenos', price_delta: 15, calories_delta: 10, protein_delta: 0, carbs_delta: 2, fat_delta: 0, sugar_delta: 1, salt_delta: 0.1 }
+                ]
+            },
+            { 
+                id: 'main8', name: 'Veggie Burrito', course: 4, cuisine: 'Latin/Spanish', diet: 'Vegetarian', price: 250, calories: 580, protein_g: 18, carbs_g: 75, fat_g: 20, sugar_g: 6, salt_g: 2.2, tags: ['filling', 'beans'],
+                addons: [
+                    { name: 'Sour Cream', price_delta: 30, calories_delta: 60, protein_delta: 1, carbs_delta: 2, fat_delta: 6, sugar_delta: 1, salt_delta: 0.1 },
+                    { name: 'Vegan Cheese', price_delta: 40, calories_delta: 80, protein_delta: 0, carbs_delta: 4, fat_delta: 7, sugar_delta: 0, salt_delta: 0.4 }
+                ]
+            },
+            { 
+                id: 'main9', name: 'Cheeseburger & Fries', course: 4, cuisine: 'Western', diet: 'Non-Vegetarian', price: 340, calories: 850, protein_g: 35, carbs_g: 70, fat_g: 45, sugar_g: 10, salt_g: 2.8, tags: ['heavy', 'fast-food'],
+                addons: [
+                    { name: 'Extra Patty', price_delta: 90, calories_delta: 250, protein_delta: 20, carbs_delta: 0, fat_delta: 18, sugar_delta: 0, salt_delta: 0.5 },
+                    { name: 'Bacon', price_delta: 50, calories_delta: 90, protein_delta: 6, carbs_delta: 0, fat_delta: 7, sugar_delta: 0, salt_delta: 0.6 }
+                ]
+            },
+            { 
+                id: 'main10', name: 'Quinoa Bowl', course: 4, cuisine: 'Western', diet: 'Vegan', price: 270, calories: 410, protein_g: 14, carbs_g: 60, fat_g: 15, sugar_g: 8, salt_g: 1.1, tags: ['superfood', 'healthy'],
+                addons: [
+                    { name: 'Avocado', price_delta: 60, calories_delta: 120, protein_delta: 1, carbs_delta: 7, fat_delta: 11, sugar_delta: 1, salt_delta: 0 },
+                    { name: 'Roasted Seeds', price_delta: 30, calories_delta: 80, protein_delta: 3, carbs_delta: 4, fat_delta: 6, sugar_delta: 0, salt_delta: 0.1 }
+                ]
+            },
+
+            // Desserts (Course 5)
+            { id: 'des1', name: 'Gulab Jamun', course: 5, cuisine: 'Indian', diet: 'Vegetarian', price: 100, calories: 300, protein_g: 4, carbs_g: 45, fat_g: 10, sugar_g: 35, salt_g: 0.1, tags: ['sweet', 'syrup'] },
+            { id: 'des2', name: 'Tiramisu', course: 5, cuisine: 'Italian/French', diet: 'Vegetarian', price: 180, calories: 350, protein_g: 6, carbs_g: 35, fat_g: 22, sugar_g: 20, salt_g: 0.2, tags: ['coffee', 'creamy'] },
+            { id: 'des3', name: 'Mochi Ice Cream', course: 5, cuisine: 'Pan-Asian', diet: 'Vegetarian', price: 150, calories: 200, protein_g: 2, carbs_g: 32, fat_g: 6, sugar_g: 22, salt_g: 0.1, tags: ['cold', 'chewy'] },
+            { id: 'des4', name: 'Churros', course: 5, cuisine: 'Latin/Spanish', diet: 'Vegan', price: 120, calories: 280, protein_g: 3, carbs_g: 40, fat_g: 12, sugar_g: 18, salt_g: 0.3, tags: ['fried', 'cinnamon'] },
+            { id: 'des5', name: 'Chocolate Brownie', course: 5, cuisine: 'Western', diet: 'Vegetarian', price: 140, calories: 400, protein_g: 5, carbs_g: 50, fat_g: 20, sugar_g: 35, salt_g: 0.4, tags: ['chocolate', 'dense'] },
+            { id: 'des6', name: 'Fruit Sorbet', course: 5, cuisine: 'Western', diet: 'Vegan', price: 110, calories: 120, protein_g: 0, carbs_g: 30, fat_g: 0, sugar_g: 28, salt_g: 0, tags: ['cold', 'fruity'] }
+        ];
+
+        /* =========================================
+           2. STATE & CONSTANTS
+        ========================================= */
+        const STARTING_BUDGET = 1000;
+        const COURSES = [
+            { id: 1, title: 'Appetizers', color: 'var(--course1-color)' },
+            { id: 2, title: 'Palate Cleanser (Soups/Salads)', color: 'var(--course2-color)' },
+            { id: 3, title: 'Beverages', color: 'var(--course3-color)' },
+            { id: 4, title: 'Main Courses', color: 'var(--course4-color)' },
+            { id: 5, title: 'Desserts', color: 'var(--course5-color)' }
+        ];
+
+        let state = {
+            budget: STARTING_BUDGET,
+            currentCourse: 1,
+            filters: {
+                cuisines: ['Indian', 'Italian/French', 'Pan-Asian', 'Latin/Spanish', 'Western'], // Default all
+                diet: 'All'
+            },
+            // tray stores items as: { item: Object, activeAddons: Set<addonName> }
+            tray: []
+        };
+
+        // UI references
+        const elConfig = document.getElementById('screen-config');
+        const elGame = document.getElementById('screen-game');
+        const elResults = document.getElementById('screen-results');
+        const elLeaderboard = document.getElementById('screen-leaderboard');
+        const elHudBudget = document.getElementById('hud-budget');
+        const elCourseTitle = document.getElementById('course-title');
+        const elFoodGrid = document.getElementById('food-grid');
+        const elEmptyState = document.getElementById('empty-state');
+        const elBtnNext = document.getElementById('btn-next');
+        const elBtnBack = document.getElementById('btn-back');
+
+        /* =========================================
+           3. INITIALIZATION & UI UTILS
+        ========================================= */
+        function init() {
+            renderConfigFilters();
+            // Show tip after a brief delay
+            setTimeout(() => {
+                document.getElementById('config-tip').style.display = 'block';
+            }, 1000);
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span style="font-size: 1.2rem;">${type === 'error' ? '⚠️' : type === 'success' ? '✅' : '💡'}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        /* =========================================
+           4. SCREEN 1: CONFIG
+        ========================================= */
+        function renderConfigFilters() {
+            // Cuisines (Multi-select)
+            const cuisines = ['Indian', 'Italian/French', 'Pan-Asian', 'Latin/Spanish', 'Western'];
+            const cuisineContainer = document.getElementById('cuisine-filters');
+            cuisineContainer.innerHTML = '';
+            cuisines.forEach(c => {
+                const chip = document.createElement('div');
+                chip.className = `filter-chip ${state.filters.cuisines.includes(c) ? 'active' : ''}`;
+                chip.textContent = c;
+                chip.onclick = () => {
+                    if (chip.classList.contains('active')) {
+                        // Prevent deselecting last one
+                        if (state.filters.cuisines.length > 1) {
+                            chip.classList.remove('active');
+                            state.filters.cuisines = state.filters.cuisines.filter(x => x !== c);
+                        } else {
+                            showToast("Must select at least one cuisine", "warning");
+                        }
+                    } else {
+                        chip.classList.add('active');
+                        state.filters.cuisines.push(c);
+                    }
+                };
+                cuisineContainer.appendChild(chip);
+            });
+
+            // Diet (Single-select)
+            const diets = ['All', 'Vegetarian', 'Non-Vegetarian', 'Vegan'];
+            const dietContainer = document.getElementById('diet-filters');
+            dietContainer.innerHTML = '';
+            diets.forEach(d => {
+                const chip = document.createElement('div');
+                chip.className = `filter-chip ${state.filters.diet === d ? 'active' : ''}`;
+                chip.textContent = d;
+                chip.onclick = () => {
+                    document.querySelectorAll('#diet-filters .filter-chip').forEach(el => el.classList.remove('active'));
+                    chip.classList.add('active');
+                    state.filters.diet = d;
+                };
+                dietContainer.appendChild(chip);
+            });
+        }
+
+        function startGame() {
+            elConfig.classList.add('hidden');
+            elGame.classList.remove('hidden');
+            state.currentCourse = 1;
+            renderCourse();
+        }
+
+        /* =========================================
+           5. SCREEN 2: GAME LOGIC
+        ========================================= */
+        function updateHUD() {
+            elHudBudget.textContent = `₹${state.budget}`;
+            elHudBudget.className = 'budget-display';
+            if (state.budget < 200) elHudBudget.classList.add('low');
+            if (state.budget < 50) elHudBudget.classList.add('critical');
+            
+            const currentC = COURSES.find(c => c.id === state.currentCourse);
+            elCourseTitle.textContent = `Course ${state.currentCourse} of 5: ${currentC.title}`;
+            // Optional: style background color of course title
+            elCourseTitle.style.color = currentC.color;
+        }
+
+        function getFilteredItems(courseId) {
+            return FOOD_DATABASE.filter(item => {
+                // Course match
+                if (item.course !== courseId) return false;
+                // Cuisine match
+                if (!state.filters.cuisines.includes(item.cuisine)) return false;
+                // Diet match (hierarchy)
+                if (state.filters.diet !== 'All') {
+                    if (state.filters.diet === 'Vegan' && item.diet !== 'Vegan') return false;
+                    if (state.filters.diet === 'Vegetarian' && (item.diet !== 'Vegetarian' && item.diet !== 'Vegan')) return false;
+                    if (state.filters.diet === 'Non-Vegetarian' && item.diet !== 'Non-Vegetarian') return false; // In a real app maybe allow veg too, but let's strictly filter for demo if they select non-veg they want meat
+                }
+                return true;
+            });
+        }
+
+        function renderCourse() {
+            updateHUD();
+            elFoodGrid.innerHTML = '';
+            
+            let items = getFilteredItems(state.currentCourse);
+            
+            if (items.length === 0) {
+                // Fallback gracefully: relax cuisine filter if zero items
+                showToast("Relaxed cuisine filters to find items", "warning");
+                items = FOOD_DATABASE.filter(i => i.course === state.currentCourse && 
+                    (state.filters.diet === 'All' || 
+                     (state.filters.diet === 'Vegan' && i.diet === 'Vegan') ||
+                     (state.filters.diet === 'Vegetarian' && (i.diet === 'Vegetarian' || i.diet === 'Vegan')) ||
+                     (state.filters.diet === 'Non-Vegetarian' && i.diet === 'Non-Vegetarian')
+                    ));
+            }
+            
+            if (items.length === 0) {
+                // Still zero? Must be a very strict diet on a specific course.
+                elFoodGrid.classList.add('hidden');
+                elEmptyState.classList.remove('hidden');
+            } else {
+                elFoodGrid.classList.remove('hidden');
+                elEmptyState.classList.add('hidden');
+                
+                items.forEach(item => {
+                    const trayRecord = state.tray.find(t => t.item.id === item.id);
+                    const isInTray = !!trayRecord;
+                    
+                    const card = document.createElement('div');
+                    card.className = `food-card ${isInTray ? 'in-tray' : ''}`;
+                    
+                    let addonsHtml = '';
+                    if (item.addons && item.addons.length > 0) {
+                        addonsHtml = `<div class="addons-box">
+                            <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 5px; color: var(--banner-green);">CUSTOMIZE</div>
+                            ${item.addons.map(addon => {
+                                const isAddonActive = isInTray && trayRecord.activeAddons.has(addon.name);
+                                return `
+                                <label class="addon-item">
+                                    <span>
+                                        <input type="checkbox" onchange="toggleAddon('${item.id}', '${addon.name}', this.checked)" ${isAddonActive ? 'checked' : ''}>
+                                        ${addon.name}
+                                    </span>
+                                    <span style="color: var(--banner-green); font-weight: bold;">+₹${addon.price_delta}</span>
+                                </label>
+                                `;
+                            }).join('')}
+                        </div>`;
+                    }
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="fc-header">
+                                <div class="fc-name">${item.name}</div>
+                                <div class="fc-price">₹${item.price}</div>
+                            </div>
+                            <div class="fc-tags">${item.cuisine} • ${item.diet}</div>
+                            <div style="font-size: 0.85rem; color: #555;">
+                                ${item.calories} kcal | Pro: ${item.protein_g}g | Carbs: ${item.carbs_g}g | Fat: ${item.fat_g}g
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            ${!isInTray 
+                                ? `<button class="btn" style="width: 100%; padding: 8px;" onclick="addToTray('${item.id}')">Add to Tray</button>`
+                                : `<button class="btn btn-danger" style="width: 100%; padding: 8px;" onclick="removeFromTray('${item.id}')">Remove</button>`
+                            }
+                            ${addonsHtml}
+                        </div>
+                    `;
+                    elFoodGrid.appendChild(card);
+                });
+            }
+
+            // Buttons state
+            elBtnBack.style.visibility = state.currentCourse === 1 ? 'hidden' : 'visible';
+            elBtnNext.textContent = state.currentCourse === 5 ? 'Finish & Analyze →' : 'Next Course →';
+        }
+
+        function addToTray(itemId) {
+            const item = FOOD_DATABASE.find(i => i.id === itemId);
+            if (state.budget < item.price) {
+                showToast("Budget exceeded! Remove something first.", "error");
+                return;
+            }
+            
+            state.budget -= item.price;
+            state.tray.push({
+                item: item,
+                activeAddons: new Set()
+            });
+            
+            showToast(`${item.name} added`, "success");
+            renderCourse(); // Re-render to update UI state
+        }
+
+        function removeFromTray(itemId) {
+            const index = state.tray.findIndex(t => t.item.id === itemId);
+            if (index > -1) {
+                const record = state.tray[index];
+                // Refund base price
+                state.budget += record.item.price;
+                // Refund active addons
+                if (record.item.addons) {
+                    record.activeAddons.forEach(addonName => {
+                        const addon = record.item.addons.find(a => a.name === addonName);
+                        if (addon) state.budget += addon.price_delta;
+                    });
+                }
+                state.tray.splice(index, 1);
+                showToast(`${record.item.name} removed`);
+                renderCourse();
+            }
+        }
+
+        function toggleAddon(itemId, addonName, isChecked) {
+            const record = state.tray.find(t => t.item.id === itemId);
+            if (!record) return; // Should not happen
+
+            const addon = record.item.addons.find(a => a.name === addonName);
+            if (!addon) return;
+
+            if (isChecked) {
+                if (state.budget < addon.price_delta) {
+                    showToast("Not enough budget for this add-on!", "error");
+                    // Uncheck it in UI (requires re-render)
+                    renderCourse();
+                    return;
+                }
+                state.budget -= addon.price_delta;
+                record.activeAddons.add(addonName);
+            } else {
+                state.budget += addon.price_delta;
+                record.activeAddons.delete(addonName);
+            }
+            updateHUD(); // Only update HUD, no need to re-render whole grid for checkbox
+        }
+
+        function prevCourse() {
+            if (state.currentCourse > 1) {
+                state.currentCourse--;
+                renderCourse();
+            }
+        }
+
+        function nextCourse() {
+            if (state.currentCourse < 5) {
+                state.currentCourse++;
+                renderCourse();
+            } else {
+                finishGame();
+            }
+        }
+
+        /* =========================================
+           6. SCREEN 3: RESULTS LOGIC
+        ========================================= */
+        function finishGame() {
+            elGame.classList.add('hidden');
+            elResults.classList.remove('hidden');
+            
+            calculateAndRenderResults();
+        }
+
+        function calculateAndRenderResults() {
+            let totalCals=0, totalPro=0, totalCarbs=0, totalFat=0, totalSugar=0, totalSalt=0, totalSpend=0;
+            let coursesUsed = new Set();
+            
+            const tbody = document.getElementById('result-table-body');
+            tbody.innerHTML = '';
+
+            state.tray.forEach(record => {
+                const base = record.item;
+                coursesUsed.add(base.course);
+                
+                // Base macros
+                let iCals = base.calories;
+                let iPro = base.protein_g;
+                let iCarbs = base.carbs_g;
+                let iFat = base.fat_g;
+                let iSugar = base.sugar_g;
+                let iSalt = base.salt_g;
+                let iSpend = base.price;
+
+                // Addons macros
+                let activeAddonList = [];
+                if (base.addons && record.activeAddons.size > 0) {
+                    record.activeAddons.forEach(aName => {
+                        const ad = base.addons.find(x => x.name === aName);
+                        if(ad) {
+                            iCals += ad.calories_delta;
+                            iPro += ad.protein_delta;
+                            iCarbs += ad.carbs_delta;
+                            iFat += ad.fat_delta;
+                            iSugar += ad.sugar_delta;
+                            iSalt += ad.salt_delta;
+                            iSpend += ad.price_delta;
+                            activeAddonList.push(ad);
+                        }
+                    });
+                }
+
+                // Add to global totals
+                totalCals += iCals;
+                totalPro += iPro;
+                totalCarbs += iCarbs;
+                totalFat += iFat;
+                totalSugar += iSugar;
+                totalSalt += iSalt;
+                totalSpend += iSpend;
+
+                // Render table row
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold;">${base.name}</td>
+                    <td>${COURSES.find(c=>c.id === base.course).title}</td>
+                    <td>₹${base.price}</td>
+                    <td>${base.calories}</td>
+                    <td>${base.protein_g}g</td>
+                `;
+                tbody.appendChild(tr);
+
+                // Render active addons as sub-rows
+                activeAddonList.forEach(ad => {
+                    const trAd = document.createElement('tr');
+                    trAd.className = 'addon-row';
+                    trAd.innerHTML = `
+                        <td style="padding-left: 20px;">+ ${ad.name}</td>
+                        <td></td>
+                        <td>+₹${ad.price_delta}</td>
+                        <td>+${ad.calories_delta}</td>
+                        <td>+${ad.protein_delta}g</td>
+                    `;
+                    tbody.appendChild(trAd);
+                });
+            });
+
+            // If empty tray
+            if (state.tray.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center">You didn't eat anything! 💀</td></tr>`;
+            }
+
+            document.getElementById('result-total-spend').textContent = `₹${totalSpend}`;
+
+            // Render Macros
+            document.getElementById('result-macros').innerHTML = `
+                <div class="macro-pill">Calories <span class="macro-val">${totalCals}</span></div>
+                <div class="macro-pill">Protein <span class="macro-val">${totalPro}g</span></div>
+                <div class="macro-pill">Carbs <span class="macro-val">${totalCarbs}g</span></div>
+                <div class="macro-pill">Fat <span class="macro-val">${totalFat}g</span></div>
+                <div class="macro-pill">Sugar <span class="macro-val">${totalSugar}g</span></div>
+                <div class="macro-pill">Salt <span class="macro-val">${totalSalt.toFixed(1)}g</span></div>
+            `;
+
+            /* 
+               SCIENTIFIC HEALTH INDEX FORMULA
+               Weights:
+               - Variety (30%): using multiple courses is good.
+               - Macros (50%): hitting reasonable daily intake targets.
+               - Budget (20%): utilizing budget effectively (not starving, not overspending if penalty).
+            */
+            const WEIGHT_VARIETY = 0.3;
+            const WEIGHT_MACRO = 0.5;
+            const WEIGHT_BUDGET = 0.2;
+
+            // Variety: 0 to 100 based on courses out of 5
+            let varietyScore = (coursesUsed.size / 5) * 100;
+
+            // Macros: start at 100, deduct for bad ranges
+            let macroScore = 100;
+            if (totalCals < 400 || totalCals > 1600) macroScore -= 20; // Too little or too much for one meal
+            if (totalPro < 15) macroScore -= 15; // Low protein
+            if (totalSugar > 40) macroScore -= 15; // High sugar
+            if (totalSalt > 6) macroScore -= 15; // High salt
+            if (totalFat > 60) macroScore -= 10; // High fat
+            macroScore = Math.max(0, macroScore);
+
+            // Budget efficiency (spend close to 1000 is good, but 0 is bad)
+            let budgetScore = (totalSpend / STARTING_BUDGET) * 100; 
+
+            let finalScore = (varietyScore * WEIGHT_VARIETY) + (macroScore * WEIGHT_MACRO) + (budgetScore * WEIGHT_BUDGET);
+            finalScore = Math.round(finalScore) || 0;
+
+            // Animate Score Number
+            let currentDisplayScore = 0;
+            const scoreEl = document.getElementById('result-score');
+            const interval = setInterval(() => {
+                currentDisplayScore += 2;
+                if (currentDisplayScore >= finalScore) {
+                    currentDisplayScore = finalScore;
+                    clearInterval(interval);
+                }
+                scoreEl.textContent = currentDisplayScore;
+            }, 20);
+        }
+
+        function submitScore() {
+            const name = document.getElementById('player-name').value.trim();
+            if (!name) {
+                showToast("Please enter your name!", "error");
+                return;
+            }
+            const score = parseInt(document.getElementById('result-score').textContent);
+            
+            // FIREBASE FIRESTORE LEADERBOARD
+            db.collection('foodLabLeaderboard').add({
+                name: name,
+                score: score,
+                timestamp: new Date().toISOString()
+            });
+
+            showToast("Score submitted to Leaderboard!", "success");
+            document.getElementById('player-name').value = '';
+            document.querySelector('.leaderboard-form button').disabled = true;
+            document.querySelector('.leaderboard-form button').textContent = "Submitted";
+        }
+
+        function resetGame() {
+            state.budget = STARTING_BUDGET;
+            state.currentCourse = 1;
+            state.tray = [];
+            document.querySelector('.leaderboard-form button').disabled = false;
+            document.querySelector('.leaderboard-form button').textContent = "Submit Score";
+            
+            elResults.classList.add('hidden');
+            elConfig.classList.remove('hidden');
+        }
+
+        function showLeaderboard() {
+            elConfig.classList.add('hidden');
+            elLeaderboard.classList.remove('hidden');
+            
+            const tbody = document.getElementById('leaderboard-table-body');
+            tbody.innerHTML = '';
+            
+            db.collection('foodLabLeaderboard').orderBy('score', 'desc').limit(10).get().then(snapshot => {
+                if (snapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center">No scores recorded yet!</td></tr>`;
+                    return;
+                }
+                
+                let index = 0;
+                snapshot.forEach(doc => {
+                    const entry = doc.data();
+                    const date = new Date(entry.timestamp).toLocaleDateString();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight: bold; color: var(--banner-green);">#${index + 1}</td>
+                        <td style="font-weight: 700;">${entry.name}</td>
+                        <td style="font-weight: 800; font-size: 1.1rem; color: var(--primary);">${entry.score}</td>
+                        <td style="font-size: 0.85rem; color: var(--muted);">${date}</td>
+                    `;
+                    tbody.appendChild(tr);
+                    index++;
+                });
+            }).catch(error => {
+                console.error("Error fetching leaderboard:", error);
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center">Error loading scores.</td></tr>`;
+            });
+        }
+
+        function hideLeaderboard() {
+            elLeaderboard.classList.add('hidden');
+            elConfig.classList.remove('hidden');
+        }
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyA3jeeh66-MCVHK3LhCzNC2pSjLtDcbTUc",
+        authDomain: "ambrosia----human-lab.firebaseapp.com",
+        projectId: "ambrosia----human-lab",
+        storageBucket: "ambrosia----human-lab.firebasestorage.app",
+        messagingSenderId: "366430297285",
+        appId: "1:366430297285:web:07f0b7b7e9621cc5ca64ac",
+        measurementId: "G-4S47WKPDP5"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    </script>
+</body>
+</html>
